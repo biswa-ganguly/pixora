@@ -17,7 +17,7 @@ export const metadata = {
   title: "PIXORA",
   description: "Pixora - An image editing web app",
   icons: {
-    icon: "/logo2.png", // This will automatically add favicon for most browsers
+    icon: "/logo2.png", 
   },
 };
 
