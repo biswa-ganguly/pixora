@@ -1,3 +1,4 @@
+import ImageEditor from '@/components/ImageEditor'
 import Navbar from '@/components/Navbar'
 import React from 'react'
 
@@ -6,6 +7,7 @@ function Home() {
     <div>Home
       <div>
         <Navbar/>
+        <ImageEditor/>
       </div>
     </div>
   )
