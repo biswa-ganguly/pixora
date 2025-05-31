@@ -3,22 +3,32 @@
 import { updateImageUrl } from "@/redux/slice/imageSlice";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
+import { useUser } from "@clerk/nextjs"; // Clerk hook
+import { useRouter } from "next/navigation"; // For redirect
+import { useEffect } from "react";
+
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 const ImageEditor = () => {
+  const { isSignedIn } = useUser(); // Clerk Auth
+  const router = useRouter();
+
   const image = useSelector((state) => state.image);
   const textOverlay = useSelector((state) => state.image.textOverlay);
-  const textOverlayOptions = useSelector(
-    (state) => state.image.textOverlayOptions
-  );
+  const textOverlayOptions = useSelector((state) => state.image.textOverlayOptions);
   const filters = useSelector((state) => state.image.filters);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push("/sign-in"); // Clerk default sign-in route
+    }
+  }, [isSignedIn, router]);
 
   const readImage = (e) => {
     if (e.target.files.length !== 0) {
       const reader = new FileReader();
-
       reader.onload = () => {
         dispatch(updateImageUrl(reader.result));
       };
@@ -26,23 +36,24 @@ const ImageEditor = () => {
     }
   };
 
+  if (!isSignedIn) {
+    return null; // Avoid rendering before redirect
+  }
+
   return (
     <>
       <Navbar />
-
       <Sidebar />
-
-      <div className="p-4 sm:ml-64">
-        <div className="border-2 border-gray-400 border-dashed  dark:border-gray-700 mt-14 h-[88vh] relative">
+      <div className="p-4 mt-6 sm:ml-64">
+        <div className="border-2 border-gray-400 border-dashed dark:border-gray-700 mt-14 h-[88vh] relative">
           {image.url !== "" && (
             <RxCross1
-              className="absolute -right-2 -top-2 bg-white rounded-full  border-solid border-2 border-red-500 w-[25px] h-[25px] p-1 cursor-pointer z-20"
+              className="absolute -right-2 -top-2 bg-white rounded-full border-solid border-2 border-red-500 w-[25px] h-[25px] p-1 cursor-pointer z-20"
               onClick={() => {
                 dispatch(updateImageUrl(""));
               }}
             />
           )}
-
           {image.url ? (
             <div id="my-node" className="relative">
               <img
@@ -50,7 +61,7 @@ const ImageEditor = () => {
                 alt="image"
                 className="w-full h-full max-h-[88vh] object-contain"
                 style={{
-                  filter: `brightness(${filters?.brightness}%)  saturate(${filters?.saturate}%) contrast(${filters?.contrast}%) grayscale(${filters?.grayscale}%)`,
+                  filter: `brightness(${filters?.brightness}%) saturate(${filters?.saturate}%) contrast(${filters?.contrast}%) grayscale(${filters?.grayscale}%)`,
                   transform: `rotate(${filters?.rotate}deg)`,
                 }}
               />
@@ -86,9 +97,9 @@ const ImageEditor = () => {
                 >
                   <path
                     stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M9 1v16M1 9h16"
                   />
                 </svg>
