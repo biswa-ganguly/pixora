@@ -4,9 +4,9 @@ import React from 'react'
 
 function Home() {
   return (
-    <div>Home
+    <div>
       <div>
-        <Navbar/>
+   
         <ImageEditor/>
       </div>
     </div>

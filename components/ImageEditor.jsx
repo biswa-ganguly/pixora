@@ -3,7 +3,6 @@
 import { updateImageUrl } from "@/redux/slice/imageSlice";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
-import { SignedIn, SignedOut } from "@clerk/nextjs"; // Add Clerk components
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
@@ -27,17 +26,17 @@ const ImageEditor = () => {
     }
   };
 
-  // Component for authenticated users
-  const AuthenticatedEditor = () => (
+  return (
     <>
       <Navbar />
+
       <Sidebar />
 
       <div className="p-4 sm:ml-64">
-        <div className="border-2 border-gray-400 border-dashed dark:border-gray-700 mt-14 h-[88vh] relative">
+        <div className="border-2 border-gray-400 border-dashed  dark:border-gray-700 mt-14 h-[88vh] relative">
           {image.url !== "" && (
             <RxCross1
-              className="absolute -right-2 -top-2 bg-white rounded-full border-solid border-2 border-red-500 w-[25px] h-[25px] p-1 cursor-pointer z-20"
+              className="absolute -right-2 -top-2 bg-white rounded-full  border-solid border-2 border-red-500 w-[25px] h-[25px] p-1 cursor-pointer z-20"
               onClick={() => {
                 dispatch(updateImageUrl(""));
               }}
@@ -51,7 +50,7 @@ const ImageEditor = () => {
                 alt="image"
                 className="w-full h-full max-h-[88vh] object-contain"
                 style={{
-                  filter: `brightness(${filters?.brightness}%) saturate(${filters?.saturate}%) contrast(${filters?.contrast}%) grayscale(${filters?.grayscale}%)`,
+                  filter: `brightness(${filters?.brightness}%)  saturate(${filters?.saturate}%) contrast(${filters?.contrast}%) grayscale(${filters?.grayscale}%)`,
                   transform: `rotate(${filters?.rotate}deg)`,
                 }}
               />
@@ -87,9 +86,9 @@ const ImageEditor = () => {
                 >
                   <path
                     stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
                     d="M9 1v16M1 9h16"
                   />
                 </svg>
@@ -107,32 +106,6 @@ const ImageEditor = () => {
           )}
         </div>
       </div>
-    </>
-  );
-
-  // Component for non-authenticated users
-  const UnauthenticatedView = () => (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Sign in to access Image Editor
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Please sign in to start editing your images with ImagiCraft.
-        </p>
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      <SignedIn>
-        <AuthenticatedEditor />
-      </SignedIn>
-      
-      <SignedOut>
-        <UnauthenticatedView />
-      </SignedOut>
     </>
   );
 };

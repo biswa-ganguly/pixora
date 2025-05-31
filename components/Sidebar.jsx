@@ -22,14 +22,12 @@ import { useDispatch, useSelector } from "react-redux";
 const Sidebar = () => {
   const dispatch = useDispatch();
   const image = useSelector((state) => state.image);
-  const filters = useSelector((state) => state.image.filters);
-  const textOverlay = useSelector((state) => state.image.textOverlay);
-  const textOverlayOptions = useSelector(
-    (state) => state.image.textOverlayOptions
-  );
+  const filters = image.filters;
+  const textOverlay = image.textOverlay;
+  const textOverlayOptions = image.textOverlayOptions;
 
   const [color, setColor] = useState("#2563eb");
-  const [activeFilter, setactiveFilter] = useState("");
+  const [activeFilter, setActiveFilter] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,15 +40,25 @@ const Sidebar = () => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [color]);
+  }, [color, dispatch]);
 
   const handleChange = (e) => {
     setColor(e.target.value);
   };
 
+  const hasFilters = Object.keys(filters).some(
+    (key) =>
+      filters[key] !== undefined &&
+      filters[key] !== 0 &&
+      filters[key] !== 100
+  );
+
+  const getDefaultValue = (filter) => {
+    return filter === "brightness" || filter === "contrast" ? 100 : 0;
+  };
+
   return (
     <aside
-      id="logo-sidebar"
       className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 ${
         image.url === "" && "pointer-events-none opacity-50"
       }`}
@@ -58,18 +66,17 @@ const Sidebar = () => {
     >
       <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
         <ul className="space-y-5 font-medium">
-          <li className="bg-[#f9f7ec] mt-3 p-4  rounded-lg transition-all  mx-auto ">
+
+          {/* Text Overlay Toggle Section */}
+          <li className="bg-[#f9f7ec] mt-3 p-4 rounded-lg transition-all mx-auto">
             <label className="inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 className="sr-only peer"
-                onChange={() => {
-                  dispatch(toggleTextOverlay());
-                }}
+                onChange={() => dispatch(toggleTextOverlay())}
                 checked={textOverlay}
-                value={textOverlay}
               />
-              <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 "></div>
+              <div className="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-green-600 after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
               <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 font-poppins">
                 Show Text Overlay
               </span>
@@ -79,282 +86,225 @@ const Sidebar = () => {
               {textOverlay && (
                 <motion.div
                   className="w-full max-w-full p-1 mt-3"
-                  initial={{
-                    opacity: 0,
-                    y: -10,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    y: -10,
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    delay: 0.1,
-                  }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
                 >
                   <div className="flex flex-col space-y-3">
+                    {/* Font size, style, color */}
                     <div className="flex gap-2 items-center justify-between">
                       <input
                         type="number"
                         max={100}
-                        name=""
-                        id=""
-                        className="w-[44px] aspect-square h-[38.6px] bg-transparent font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-medium focus:outline-none px-2 text-[15px] text-center"
-                        value={textOverlayOptions["fontSize"]}
-                        onChange={(e) => {
-                          e.target.value = Math.min(e.target.value, 100);
+                        min={1}
+                        className="w-[44px] h-[38.6px] text-center border-2 rounded-md font-outfit"
+                        value={textOverlayOptions?.fontSize || 16}
+                        onChange={(e) =>
                           dispatch(
                             updateTextoverlayFilters({
                               filterName: "fontSize",
-                              value: e.target.value,
+                              value: Math.min(
+                                Math.max(e.target.value, 1),
+                                100
+                              ),
                             })
-                          );
-                        }}
+                          )
+                        }
                       />
-
                       <div
-                        className={`w-[40px] aspect-square h-[38.6px]  font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-normal focus:outline-none px-2 flex flex-col items-center cursor-pointer ${
-                          textOverlayOptions.bold && "text-white bg-black"
+                        className={`w-[40px] h-[38.6px] flex items-center justify-center border-2 rounded-md cursor-pointer ${
+                          textOverlayOptions?.bold
+                            ? "bg-black text-white"
+                            : "hover:bg-gray-100"
                         }`}
                         onClick={() =>
                           dispatch(
                             updateTextoverlayFilters({
                               filterName: "bold",
-                              value: !textOverlayOptions.bold,
+                              value: !textOverlayOptions?.bold,
                             })
                           )
                         }
                       >
-                        <FontBoldIcon className="my-auto mx-auto" />
+                        <FontBoldIcon />
                       </div>
-
                       <div
-                        className={`w-[40px] aspect-square h-[38.6px]  font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-normal focus:outline-none px-2 flex flex-col items-center cursor-pointer ${
-                          textOverlayOptions.italic && "text-white bg-black"
+                        className={`w-[40px] h-[38.6px] flex items-center justify-center border-2 rounded-md cursor-pointer ${
+                          textOverlayOptions?.italic
+                            ? "bg-black text-white"
+                            : "hover:bg-gray-100"
                         }`}
                         onClick={() =>
                           dispatch(
                             updateTextoverlayFilters({
                               filterName: "italic",
-                              value: !textOverlayOptions.italic,
+                              value: !textOverlayOptions?.italic,
                             })
                           )
                         }
                       >
-                        <FontItalicIcon className="my-auto mx-auto" />
+                        <FontItalicIcon />
                       </div>
-
                       <input
                         type="color"
-                        className="p-1 block border-gray-400 border-solid border-2  rounded-md text-black cursor-pointer w-[44px] aspect-square h-[38.6px] bg-transparent"
-                        id="hs-color-input"
-                        value={textOverlayOptions.color}
-                        title="Choose your color"
-                        onChange={(e) => {
+                        className="w-[44px] h-[38.6px] p-1 border-2 rounded-md cursor-pointer"
+                        value={textOverlayOptions?.color || "#000000"}
+                        onChange={(e) =>
                           dispatch(
                             updateTextoverlayFilters({
                               filterName: "color",
                               value: e.target.value,
                             })
-                          );
-                        }}
+                          )
+                        }
                       />
                     </div>
 
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="text"
-                        name=""
-                        id=""
-                        className="bg-transparent font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-medium focus:outline-none px-2 text-[15px] h-9 w-[100%]"
-                        value={textOverlayOptions["value"]}
-                        onChange={(e) => {
-                          dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "value",
-                              value: e.target.value,
-                            })
-                          );
-                        }}
-                      />
-                    </div>
+                    {/* Text Input */}
+                    <input
+                      type="text"
+                      placeholder="Enter text..."
+                      className="border-2 rounded-md px-2 h-9"
+                      value={textOverlayOptions?.value || ""}
+                      onChange={(e) =>
+                        dispatch(
+                          updateTextoverlayFilters({
+                            filterName: "value",
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                    />
 
-                    <div className="flex gap-2 items-center">
-                      <span className="font-outfit font-normal">Vertical</span>
-                      <input
-                        id="default-range"
-                        type="range"
-                        min={0}
-                        max={100}
-                        defaultValue={textOverlayOptions["top"]}
-                        value={textOverlayOptions["top"]}
-                        className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mt-[6px]`}
-                        onChange={(e) => {
-                          dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "top",
-                              value: e.target.value,
-                            })
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <span className="font-outfit font-normal">
-                        Horizontal
-                      </span>
-                      <input
-                        id="default-range"
-                        type="range"
-                        min={0}
-                        max={100}
-                        defaultValue={textOverlayOptions["left"]}
-                        value={textOverlayOptions["left"]}
-                        className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mt-[6px]`}
-                        onChange={(e) => {
-                          dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "left",
-                              value: e.target.value,
-                            })
-                          );
-                        }}
-                      />
-                    </div>
+                    {/* Vertical & Horizontal Position Sliders */}
+                    {["top", "left"].map((pos) => (
+                      <div key={pos} className="flex gap-2 items-center">
+                        <span className="min-w-[60px] capitalize text-sm font-outfit">
+                          {pos === "top" ? "Vertical" : "Horizontal"}
+                        </span>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          step={1}
+                          value={
+                            textOverlayOptions?.[pos] !== undefined
+                              ? textOverlayOptions[pos]
+                              : 50
+                          }
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          onChange={(e) =>
+                            dispatch(
+                              updateTextoverlayFilters({
+                                filterName: pos,
+                                value: parseInt(e.target.value),
+                              })
+                            )
+                          }
+                        />
+                        <span className="text-xs text-gray-500 min-w-[30px]">
+                          {textOverlayOptions?.[pos] ?? 50}%
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </li>
 
-          <li className="rounded-lg flex gap-2 items-center justify-between px-4 flex-wrap bg-[#f9f7ec] py-4">
-            {/* <div
-              className="w-[100px] aspect-square h-[38.6px] bg-transparent font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-medium focus:outline-none px-2 flex flex-col items-center cursor-pointer"
-              onClick={() => {
-                dispatch(
-                  updateImageFilters({
-                    filterName: "rotate",
-                    value: filters["rotate"] - 90,
-                  })
-                );
-              }}
-            >
-              <MdOutlineRotate90DegreesCcw className="text-[17px] text-center my-auto" />
+          {/* Filters Section */}
+          <li className="bg-[#f9f7ec] py-4 px-4 rounded-lg flex flex-wrap gap-2 items-center justify-between">
+            {["brightness", "grayscale", "contrast", "saturate"].map((filter) => (
+              <div
+                key={filter}
+                className={`w-[100px] h-[38.6px] flex items-center justify-center border-2 rounded-md cursor-pointer ${
+                  activeFilter === filter
+                    ? "bg-black text-white"
+                    : "hover:bg-gray-100"
+                }`}
+                onClick={() =>
+                  setActiveFilter(activeFilter === filter ? "" : filter)
+                }
+              >
+                <p className="text-[12px] text-center my-auto capitalize">
+                  {filter}
+                </p>
+              </div>
+            ))}
+
+            {/* Slider for active filter */}
+            <div className="w-full mt-4 flex items-center gap-2">
+              <span className="text-xs text-gray-500 min-w-[20px]">0</span>
+              <input
+                type="range"
+                min={0}
+                max={200}
+                step={1}
+                value={
+                  activeFilter
+                    ? filters?.[activeFilter] ?? getDefaultValue(activeFilter)
+                    : 0
+                }
+                disabled={!activeFilter}
+                className={`flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer ${
+                  !activeFilter && "opacity-50 pointer-events-none"
+                }`}
+                onChange={(e) => {
+                  if (activeFilter) {
+                    dispatch(
+                      updateImageFilters({
+                        filterName: activeFilter,
+                        value: parseInt(e.target.value),
+                      })
+                    );
+                  }
+                }}
+              />
+              <span className="text-xs text-gray-500 min-w-[30px]">200</span>
             </div>
 
-            <div
-              className="w-[100px] aspect-square h-[38.6px] bg-transparent font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-medium focus:outline-none px-2 flex flex-col items-center cursor-pointer"
-              onClick={() => {
-                dispatch(
-                  updateImageFilters({
-                    filterName: "rotate",
-                    value: filters["rotate"] + 90,
-                  })
-                );
-              }}
-            >
-              <MdOutlineRotate90DegreesCw className="text-[17px] text-center my-auto" />
-            </div> */}
-
-            <div
-              className={`w-[100px] aspect-square h-[38.6px]  font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-normal focus:outline-none px-2 flex flex-col items-center cursor-pointer ${
-                activeFilter === "brightness" && "text-white bg-black"
-              }`}
-              onClick={() =>
-                setactiveFilter(
-                  activeFilter === "brightness" ? "" : "brightness"
-                )
-              }
-            >
-              <p className="text-[16px] text-center my-auto">Brightness</p>
-            </div>
-
-            <div
-              className={`w-[100px] aspect-square h-[38.6px]  font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-normal focus:outline-none px-2 flex flex-col items-center cursor-pointer ${
-                activeFilter === "grayscale" && "text-white bg-black"
-              }`}
-              onClick={() =>
-                setactiveFilter(activeFilter === "grayscale" ? "" : "grayscale")
-              }
-            >
-              <p className="text-[16px] text-center my-auto">Grayscale</p>
-            </div>
-
-            <div
-              className={`w-[100px] aspect-square h-[38.6px]  font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-normal focus:outline-none px-2 flex flex-col items-center cursor-pointer ${
-                activeFilter === "contrast" && "text-white bg-black"
-              }`}
-              onClick={() =>
-                setactiveFilter(activeFilter === "contrast" ? "" : "contrast")
-              }
-            >
-              <p className="text-[16px] text-center my-auto">Contrast</p>
-            </div>
-
-            <div
-              className={`w-[100px] aspect-square h-[38.6px]  font-outfit border-solid border-2 border-gray-400 rounded-md text-black font-normal focus:outline-none px-2 flex flex-col items-center cursor-pointer ${
-                activeFilter === "saturate" && "text-white bg-black"
-              }`}
-              onClick={() =>
-                setactiveFilter(activeFilter === "saturate" ? "" : "saturate")
-              }
-            >
-              <p className="text-[16px] text-center my-auto">Saturate</p>
-            </div>
-
-            <input
-              id="default-range"
-              type="range"
-              min={0}
-              max={200}
-              defaultValue={filters[activeFilter] || 0}
-              value={filters[activeFilter]}
-              className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mt-4 ${
-                activeFilter === "" && "opacity-50 pointer-events-none"
-              }`}
-              onChange={(e) => {
-                dispatch(
-                  updateImageFilters({
-                    filterName: activeFilter,
-                    value: e.target.value,
-                  })
-                );
-              }}
-            />
+            {activeFilter && (
+              <div className="w-full text-center mt-2 text-sm text-gray-600 capitalize">
+                {activeFilter}: {filters?.[activeFilter] ?? getDefaultValue(activeFilter)}
+              </div>
+            )}
           </li>
 
-          {image.url !== "" && (
+          {/* Save & Reset Buttons */}
+          {image.url && (
             <li
-              className="font-outfit font-normal bg-[#0079FF] text-white  flex p-2 items-center justify-center gap-3 rounded-lg cursor-pointer"
+              className="bg-[#0079FF] text-white flex p-2 items-center justify-center gap-3 rounded-lg cursor-pointer hover:bg-[#0066CC] transition-colors"
               onClick={() => {
-                htmlToImage
-                  .toBlob(document.getElementById("my-node"))
-                  .then(function (blob) {
-                    if (window.saveAs) {
-                      window.saveAs(blob, "my-node.png");
-                    } else {
-                      FileSaver.saveAs(blob, "my-node.png");
-                    }
-                  });
+                const node = document.getElementById("my-node");
+                if (node) {
+                  htmlToImage
+                    .toBlob(node)
+                    .then((blob) => {
+                      if (blob) FileSaver.saveAs(blob, "edited-image.png");
+                    })
+                    .catch((err) =>
+                      console.error("Error generating image:", err)
+                    );
+                }
               }}
             >
-              <LuSave className="m-0  text-[26px]" /> Save Image
+              <LuSave className="text-[26px]" />
+              Save Image
             </li>
           )}
 
-          {filters.length !== 0 && (
+          {hasFilters && (
             <li
-              className="font-outfit font-normal bg-[#FE0000] text-white  flex p-2 items-center justify-center gap-3 rounded-lg cursor-pointer"
+              className="bg-[#FE0000] text-white flex p-2 items-center justify-center gap-3 rounded-lg cursor-pointer hover:bg-[#E60000] transition-colors"
               onClick={() => {
                 dispatch(resetImageOptions());
-                setactiveFilter("");
+                setActiveFilter("");
               }}
             >
-              <LuUndo className="m-0  text-[26px]" /> Reset Filters
+              <LuUndo className="text-[26px]" />
+              Reset Filters
             </li>
           )}
         </ul>
