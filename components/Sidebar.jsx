@@ -59,12 +59,12 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 ${
+      className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-gradient-to-tr from-[#22073d] via-[#005e99] to-[#b85a0a] transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 ${
         image.url === "" && "pointer-events-none opacity-50"
       }`}
       aria-label="Sidebar"
     >
-      <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+      <div className="h-full bg-gradient-to-tr from-[#22073d] via-[#005e99] to-[#b85a0a] px-3 pb-4 overflow-y-auto  ">
         <ul className="space-y-5 font-medium">
 
           {/* Text Overlay Toggle Section */}
@@ -180,7 +180,7 @@ const Sidebar = () => {
                     {/* Vertical & Horizontal Position Sliders */}
                     {["top", "left"].map((pos) => (
                       <div key={pos} className="flex gap-2 items-center">
-                        <span className="min-w-[60px] capitalize text-sm font-outfit">
+                        <span className="min-w-[80px] capitalize text-xs font-outfit">
                           {pos === "top" ? "Vertical" : "Horizontal"}
                         </span>
                         <input

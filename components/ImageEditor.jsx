@@ -44,7 +44,7 @@ const ImageEditor = () => {
     <>
       <Navbar />
       <Sidebar />
-      <div className="p-4 mt-4 sm:ml-64">
+      <div className="p-4 mt-4 bg-gradient-to-tr from-[#22073d] via-[#005e99] to-[#b85a0a] animate-gradient sm:ml-64">
         <div className="border-2 border-gray-400 border-dashed dark:border-gray-700 mt-14 h-[88vh] relative">
           {image.url !== "" && (
             <RxCross1

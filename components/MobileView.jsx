@@ -66,7 +66,7 @@ function MobileView() {
   return (
     <div>
         <Navbar/>
-    <div className="min-h-screen mt-22 bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen pt-22 bg-gradient-to-tr from-[#22073d] via-[#005e99] to-[#b85a0a]  dark:bg-gray-900">
       {/* Image Editor Section */}
       <div className="p-4">
         <div className="border-2 border-gray-400 border-dashed dark:border-gray-700 h-[50vh] relative rounded-lg">

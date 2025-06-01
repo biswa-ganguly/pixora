@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
         <head>
           <link rel="icon" href="/logo2.png" />
         </head>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body className={` ${geistMono.variable} font-mono antialiased`}>
           <ReduxProvider>{children}</ReduxProvider>
         </body>
       </html>
