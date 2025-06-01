@@ -5,7 +5,7 @@ import {
   resetImageOptions,
   toggleTextOverlay,
   updateImageFilters,
-  updateTextoverlayFilters,
+  updateTextOverlayOptions, 
 } from "@/redux/slice/imageSlice";
 import { FontBoldIcon, FontItalicIcon } from "@radix-ui/react-icons";
 import FileSaver from "file-saver";
@@ -32,8 +32,8 @@ const Sidebar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(
-        updateTextoverlayFilters({
-          filterName: "color",
+        updateTextOverlayOptions({ 
+          property: "color", 
           value: color,
         })
       );
@@ -102,8 +102,8 @@ const Sidebar = () => {
                         value={textOverlayOptions?.fontSize || 16}
                         onChange={(e) =>
                           dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "fontSize",
+                            updateTextOverlayOptions({ 
+                              property: "fontSize", 
                               value: Math.min(
                                 Math.max(e.target.value, 1),
                                 100
@@ -120,8 +120,8 @@ const Sidebar = () => {
                         }`}
                         onClick={() =>
                           dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "bold",
+                            updateTextOverlayOptions({ 
+                              property: "bold", 
                               value: !textOverlayOptions?.bold,
                             })
                           )
@@ -137,8 +137,8 @@ const Sidebar = () => {
                         }`}
                         onClick={() =>
                           dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "italic",
+                            updateTextOverlayOptions({ 
+                              property: "italic", 
                               value: !textOverlayOptions?.italic,
                             })
                           )
@@ -152,8 +152,8 @@ const Sidebar = () => {
                         value={textOverlayOptions?.color || "#000000"}
                         onChange={(e) =>
                           dispatch(
-                            updateTextoverlayFilters({
-                              filterName: "color",
+                            updateTextOverlayOptions({ 
+                              property: "color", 
                               value: e.target.value,
                             })
                           )
@@ -169,8 +169,8 @@ const Sidebar = () => {
                       value={textOverlayOptions?.value || ""}
                       onChange={(e) =>
                         dispatch(
-                          updateTextoverlayFilters({
-                            filterName: "value",
+                          updateTextOverlayOptions({ 
+                            property: "value", 
                             value: e.target.value,
                           })
                         )
@@ -196,8 +196,8 @@ const Sidebar = () => {
                           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                           onChange={(e) =>
                             dispatch(
-                              updateTextoverlayFilters({
-                                filterName: pos,
+                              updateTextOverlayOptions({ 
+                                property: pos, 
                                 value: parseInt(e.target.value),
                               })
                             )
